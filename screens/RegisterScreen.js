@@ -1,20 +1,21 @@
-import { StatusBar } from "expo-status-bar";
-import { Platform, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  View,
+} from "react-native";
 import React, { useLayoutEffect, useState } from "react";
-import { KeyboardAvoidingView } from "react-native";
-import { Button, Input, Text } from "react-native-elements";
+import { StatusBar } from "expo-status-bar";
+import { Button, Input, Text } from "react-native-elements"; // v3
 import { auth } from "../firebase";
+
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [password, setPassword] = useState("");
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerBackTitle: "Back to Login",
-    });
-  }, [navigation]);
   const register = () => {
     auth
       .createUserWithEmailAndPassword(email, password)
@@ -23,21 +24,30 @@ const RegisterScreen = ({ navigation }) => {
           displayName: name,
           photoURL:
             imageUrl ||
-            "https://png.pngtree.com/png-vector/20210604/ourmid/pngtree-gray-avatar-placeholder-png-image_3416697.jpg",
+            "https://toppng.com/uploads/preview/roger-berry-avatar-placeholder-11562991561rbrfzlng6h.png",
         });
       })
-      .catch((error) => alert(error.message));
+      .catch((err) => {
+        alert(err.message);
+      });
   };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerBackTitle: "Back",
+      headerBackTitleVisible: true,
+    });
+  }, []);
+
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <StatusBar style="light" />
 
-      {/* Text from react-native-element has h3 */}
-      <Text h3 style={{ marginBottom: 50, textAlign: "center" }}>
-        Create a Signal account
+      <Text h3 style={{ marginBottom: 50 }}>
+        Create a Signal Account
       </Text>
 
       <View style={styles.inputContainer}>
@@ -56,13 +66,13 @@ const RegisterScreen = ({ navigation }) => {
         />
         <Input
           placeholder="Password"
-          type="text"
-          value={password}
+          type="password"
           secureTextEntry
+          value={password}
           onChangeText={(text) => setPassword(text)}
         />
         <Input
-          placeholder="Profile Image Url (Optional)"
+          placeholder="Profile Picture URL (Optional)"
           type="text"
           value={imageUrl}
           onChangeText={(text) => setImageUrl(text)}
@@ -72,10 +82,9 @@ const RegisterScreen = ({ navigation }) => {
       <Button
         containerStyle={styles.button}
         raised
-        onPress={register}
         title="Register"
+        onPress={register}
       />
-      <View style={{ height: 100 }} />
     </KeyboardAvoidingView>
   );
 };
@@ -88,12 +97,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 10,
-    backgroundColor: "white",
+    backgroundColor: "#fff",
   },
   inputContainer: {
     width: 300,
   },
-  Button: {
+  button: {
     width: 200,
     marginTop: 10,
   },

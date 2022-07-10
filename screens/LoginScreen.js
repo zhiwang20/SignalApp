@@ -1,33 +1,29 @@
 import { StatusBar } from "expo-status-bar";
+import React, { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
-import React, { useState, useEffect } from "react";
 import { Button, Input, Image } from "react-native-elements";
+import logo from "../assets/signal-logo.png";
 import { auth } from "../firebase";
 
-function LoginScreen({ navigation }) {
+const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   useEffect(() => {
-    //onAuthStateChanged knows when the persisted user object is first available.
-    const unsubcribe = auth.onAuthStateChanged((authUser) => {
-      console.log(authUser);
+    const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
-        navigation.replace("Home");
+        navigation.replace("Home"); //when persisting the login status
       }
     });
-    //cleanup function:
-    return unsubcribe;
-    // return () => {
-    //     unsubcribe()
-    // }
+    return unsubscribe;
   }, []);
 
   const signIn = () => {
     auth
       .signInWithEmailAndPassword(email, password)
-      .catch((error) => alert(error));
+      .catch((err) => alert(err.message));
   };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -35,16 +31,17 @@ function LoginScreen({ navigation }) {
     >
       <StatusBar style="light" />
       <Image
-        source={{
-          uri: "https://blog.mozilla.org/internetcitizen/files/2018/08/signal-logo.png",
+        source={logo}
+        style={{
+          width: 200,
+          height: 200,
         }}
-        style={{ width: 200, height: 200 }}
       />
-      <View style={styles.inputContainers}>
+      <View style={styles.inputContainer}>
         <Input
           placeholder="Email"
           autoFocus
-          type="Email"
+          type="emailAddress"
           value={email}
           onChangeText={(text) => setEmail(text)}
         />
@@ -53,36 +50,37 @@ function LoginScreen({ navigation }) {
           secureTextEntry
           type="password"
           value={password}
-          onChangeText={(text) => setPassword(text)}
           onSubmitEditing={signIn}
+          onChangeText={(text) => setPassword(text)}
         />
       </View>
-      <Button style={styles.button} onPress={signIn} title="Login" />
+      <Button title={"Login"} onPress={signIn} containerStyle={styles.button} />
       <Button
         onPress={() => navigation.navigate("Register")}
-        style={styles.button}
+        title={"Register"}
         type="outline"
-        title="Register"
+        containerStyle={styles.button}
       />
-      <View style={{ height: 100 }} />
+      <View style={{ height: 100 }}></View>
     </KeyboardAvoidingView>
   );
-}
+};
+
+export default LoginScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
     padding: 10,
+    backgroundColor: "white",
+  },
+  inputContainer: {
+    width: 300,
   },
   button: {
     width: 200,
     marginTop: 10,
   },
-  inputContainers: {
-    width: 300,
-  },
 });
-
-export default LoginScreen;
